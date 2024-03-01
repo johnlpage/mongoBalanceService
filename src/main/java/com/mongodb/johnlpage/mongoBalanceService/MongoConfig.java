@@ -26,7 +26,6 @@ public class MongoConfig extends AbstractMongoClientConfiguration{
    
     @Bean
     MongoTransactionManager transactionManager(MongoDatabaseFactory dbFactory) {
-        System.out.println("HERE HERE HERE <=====================");
         return new MongoTransactionManager(dbFactory);
     }
 
@@ -37,7 +36,7 @@ public class MongoConfig extends AbstractMongoClientConfiguration{
     @Bean
     @Override
     public MongoClient mongoClient() {
-        final ConnectionString connectionString = new ConnectionString("mongodb://localhost:27017/bankbalance?replicaSet=repset");
+        final ConnectionString connectionString = new ConnectionString(uri);
         final MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
             .applyConnectionString(connectionString)
             .build();
