@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mongodb.client.MongoClient;
@@ -25,6 +26,7 @@ public class CustomTransactionRepositoryImpl implements CustomTransactionReposit
     private MongoTemplate template;
     // This is the code where we define our Transaction
     @Transactional
+    @Retryable 
     public long recordTransaction(BankTransaction newTransaction) {
         // MongoTemplate is like a mongoClient with Object mapping
      
