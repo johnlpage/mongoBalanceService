@@ -2,7 +2,7 @@ package com.mongodb.johnlpage.mongoBalanceService.model;
 
 import java.util.Random;
 
-
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
@@ -26,7 +26,9 @@ import java.util.List;
 
 @Document("transactions")
 public class BankTransaction {
-    public static int nAccounts = 1_000_000;
+    
+    @Value("${mongobalance.johnlpage.nAccounts}")
+    public static int nAccounts;
 
     static enum TransactionType {
         WITHDRAWL, DEPOSIT

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,8 +16,11 @@ import com.mongodb.johnlpage.mongoBalanceService.repository.TransactionRepositor
 @RestController
 
 public class BalanceController {
-      @Autowired
+    @Autowired
     private TransactionRepository transactionRepository;
+
+    @Value("${mongobalance.johnlpage.bootstrapTxnPerAccount}")
+    private int bootstrapTxnPerAccount;
 
     @SuppressWarnings("null")
     @PostMapping("/transaction")
@@ -31,24 +35,23 @@ public class BalanceController {
         return new ResponseEntity<String>(HttpStatus.CREATED);
     }
 
-    //Load in at least one transaction per account
+    // Load in at least one transaction per account
     @SuppressWarnings("null")
     @PostMapping("/bootstrap")
     public ResponseEntity<String> BootstrapAccounts() {
-        
-        for(int accountNo=0;accountNo<BankTransaction.nAccounts;accountNo++) {
+
+        int bootstrapTxn = bootstrapTxnPerAccount * BankTransaction.nAccounts;
+
+        for (int x = 0; x < bootstrapTxn; x++) {
             BankTransaction newTransaction = BankTransaction.example();
             try {
                 transactionRepository.recordTransaction(newTransaction);
-            } catch( Exception e) {
+            } catch (Exception e) {
                 System.err.println("Error updating MongoDB");
-                System.err.println(e.getMessage()); //Might get dups here
+                System.err.println(e.getMessage()); // Might get dups here
             }
         }
-       
-    
+
         return new ResponseEntity<String>(HttpStatus.CREATED);
     }
-
 }
-

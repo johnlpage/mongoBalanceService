@@ -23,7 +23,7 @@ public class MongoConfig extends AbstractMongoClientConfiguration{
     @Value("${spring.data.mongodb.uri}")
     private String uri;
     
-    @Value("${spring.data.mongodb.database}")
+    @Value("${mongobalance.johnlpage.nAccounts}")
     private String db;
    
     // Auto Index Creation is OK for development/testing but not best in production
