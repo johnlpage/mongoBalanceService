@@ -142,11 +142,9 @@ public class BankTransaction {
             RNG = new Random();
         }
         BankTransaction t = new BankTransaction();
-        //We will get some collisions here - we should gracefully ignore repeats.
 
         t.transactionId = System.currentTimeMillis() * 100_000;
-       
-        t.transactionId += RNG.nextInt(100_000);
+        t.transactionId += Thread.currentThread().getId();
 
    
         t.accountId = RNG.nextInt(BankTransaction.nAccounts) + 1_000_000; 
