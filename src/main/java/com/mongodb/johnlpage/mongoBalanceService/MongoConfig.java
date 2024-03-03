@@ -26,6 +26,12 @@ public class MongoConfig extends AbstractMongoClientConfiguration{
     @Value("${spring.data.mongodb.database}")
     private String db;
    
+    // Auto Index Creation is OK for development/testing but not best in production
+    @Override
+    public boolean autoIndexCreation() {
+      return true;
+    }
+
     @Bean
     MongoTransactionManager transactionManager(MongoDatabaseFactory dbFactory) {
         return new MongoTransactionManager(dbFactory);

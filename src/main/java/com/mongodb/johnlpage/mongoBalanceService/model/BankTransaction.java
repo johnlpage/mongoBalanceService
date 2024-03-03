@@ -18,6 +18,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+//We can fetch all the transactions and join the balance if we need to
+
 @CompoundIndexes({
         @CompoundIndex(name = "account_date", def = "{'accountId' : 1, 'transactionDate': 1}")
 })

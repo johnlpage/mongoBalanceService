@@ -22,7 +22,9 @@ public class BalanceHistory {
     @Field(targetType = FieldType.DECIMAL128)
     private BigDecimal change;
 
-    private Long transactionId;
+    // Use same transaction ID for history
+    
+    @Id private Long transactionId;
 
     public Date getUpdateTime() {
         return updateTime;
