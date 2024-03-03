@@ -14,7 +14,6 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.mongodb.client.MongoClient;
 import com.mongodb.johnlpage.mongoBalanceService.model.BalanceHistory;
 import com.mongodb.johnlpage.mongoBalanceService.model.BankBalance;
 import com.mongodb.johnlpage.mongoBalanceService.model.BankTransaction;
