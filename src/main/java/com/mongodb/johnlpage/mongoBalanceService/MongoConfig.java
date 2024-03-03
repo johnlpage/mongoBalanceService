@@ -44,6 +44,8 @@ public class MongoConfig extends AbstractMongoClientConfiguration{
     @Bean
     @Override
     public MongoClient mongoClient() {
+
+        
         final ConnectionString connectionString = new ConnectionString(uri);
         final MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
             .applyConnectionString(connectionString)

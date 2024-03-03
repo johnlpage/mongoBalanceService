@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.FieldType;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -25,10 +26,16 @@ import java.util.List;
 })
 
 @Document("transactions")
+@Component
 public class BankTransaction {
-    
-    @Value("${mongobalance.johnlpage.nAccounts}")
+
+
     public static int nAccounts;
+
+    @Value("${mongobalance.johnlpage.nAccounts}")
+    public void setNameStatic(int name){
+        BankTransaction.nAccounts = name;
+    }
 
     static enum TransactionType {
         WITHDRAWL, DEPOSIT
@@ -51,6 +58,8 @@ public class BankTransaction {
     private HashMap<String,Object> requestJSON;
 
     BankTransaction() {
+       
+
         this.flags = new ArrayList<String>();
     }
 
@@ -128,13 +137,16 @@ public class BankTransaction {
 
     // Generate a fake transaction for testing
     public static BankTransaction example() {
+       
         if (RNG == null) {
             RNG = new Random();
         }
         BankTransaction t = new BankTransaction();
+        //We will get some collisions here - we should gracefully ignore repeats.
+
         t.transactionId = RNG.nextLong(Long.MAX_VALUE - 100_000_000) + 100_000_000;
    
-        t.accountId = RNG.nextInt(BankTransaction.nAccounts) + 1_000_000;
+        t.accountId = RNG.nextInt(BankTransaction.nAccounts) + 1_000_000; 
 
         t.customerId = (t.accountId *3 ) + RNG.nextInt(3); // 3 Customers per account 
      

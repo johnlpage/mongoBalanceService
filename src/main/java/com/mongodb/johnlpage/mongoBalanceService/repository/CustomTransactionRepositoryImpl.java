@@ -51,6 +51,7 @@ public class CustomTransactionRepositoryImpl implements CustomTransactionReposit
         BalanceHistory bh = new BalanceHistory();
         bh.setAccountId(newTransaction.getAccountId());
         bh.setUpdateTime(new Date());
+        bh.setTransactionId(newTransaction.getTransactionId());
         bh.setBalance(postUpdate.getBalance());
         bh.setChange(newTransaction.getAmmount());
         template.insert(bh);

@@ -22,6 +22,9 @@ public class BalanceController {
     @Value("${mongobalance.johnlpage.bootstrapTxnPerAccount}")
     private int bootstrapTxnPerAccount;
 
+    @Value("${mongobalance.johnlpage.nAccounts}")
+    int nAccounts;
+
     @SuppressWarnings("null")
     @PostMapping("/transaction")
     public ResponseEntity<String> NewTransaction(@RequestBody BankTransaction newTransaction) {
@@ -40,7 +43,7 @@ public class BalanceController {
     @PostMapping("/bootstrap")
     public ResponseEntity<String> BootstrapAccounts() {
 
-        int bootstrapTxn = bootstrapTxnPerAccount * BankTransaction.nAccounts;
+        int bootstrapTxn = bootstrapTxnPerAccount * nAccounts;
 
         for (int x = 0; x < bootstrapTxn; x++) {
             BankTransaction newTransaction = BankTransaction.example();
