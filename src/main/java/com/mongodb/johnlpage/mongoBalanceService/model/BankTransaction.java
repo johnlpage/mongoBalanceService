@@ -144,7 +144,10 @@ public class BankTransaction {
         BankTransaction t = new BankTransaction();
         //We will get some collisions here - we should gracefully ignore repeats.
 
-        t.transactionId = RNG.nextLong(Long.MAX_VALUE - 100_000_000) + 100_000_000;
+        t.transactionId = System.currentTimeMillis() * 100_000;
+       
+        t.transactionId += RNG.nextInt(100_000);
+
    
         t.accountId = RNG.nextInt(BankTransaction.nAccounts) + 1_000_000; 
 
