@@ -1,23 +1,42 @@
 package com.mongodb.johnlpage.mongoBalanceService.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.mongodb.johnlpage.mongoBalanceService.model.BankBalance;
 import com.mongodb.johnlpage.mongoBalanceService.model.BankTransaction;
+import com.mongodb.johnlpage.mongoBalanceService.repository.BalanceRepository;
 import com.mongodb.johnlpage.mongoBalanceService.repository.TransactionRepository;
 
 @RestController
 
 public class BalanceController {
+
+    Logger logger = LoggerFactory.getLogger(BalanceController.class);
+
     @Autowired
     private TransactionRepository transactionRepository;
+
+    @Autowired
+    private BalanceRepository balanceRepository;
 
     @Value("${mongobalance.johnlpage.bootstrapTxnPerAccount}")
     private int bootstrapTxnPerAccount;
@@ -25,7 +44,65 @@ public class BalanceController {
     @Value("${mongobalance.johnlpage.nAccounts}")
     int nAccounts;
 
+    /*
+     * Fetch Current Balance for an Account
+     */
+    @GetMapping("/balance/{accountId}")
+    public ResponseEntity<BankBalance> GetBalance(@PathVariable long accountId) {
+        Optional<BankBalance> balance;
+
+        // FindById is a build in function
+        balance = balanceRepository.findById(accountId);
+        return ResponseEntity.of(balance);
+    }
+
+    /*
+     * Fetch a single Transaction
+     */
+
+    @GetMapping("/transaction/{transactionId}")
+    public ResponseEntity<BankTransaction> GetTransaction(@PathVariable long transactionId) {
+        Optional<BankTransaction> transaction;
+
+        // FindById is a build in function
+        transaction = transactionRepository.findById(transactionId);
+        return ResponseEntity.of(transaction);
+    }
+
+    /*
+     * Fetch a Single transaction but specify the account as well as transactionsid
+     * If we plan to Shard (Partition) this data then the obvious shard key is
+     * accountNo,transacitonId as we
+     * Can include that in most queries that are for a specific transactonId
+     */
+
+    @GetMapping("/transaction/{accountId}/{transactionId}")
+    public ResponseEntity<BankTransaction> GetTransactionWithAccount(@PathVariable long accountId,
+            @PathVariable long transactionId) {
+        Optional<BankTransaction> transaction;
+
+        transaction = transactionRepository.getTransactionWithAccountId(accountId, transactionId);
+        return ResponseEntity.of(transaction);
+    }
+
     @SuppressWarnings("null")
+    @GetMapping("/transactions/{accountId}")
+    public ResponseEntity<List<BankTransaction>> GetStatement(@PathVariable Long accountId,
+            @RequestParam(value = "fromDate", defaultValue = "21000101000000") @DateTimeFormat(pattern = "yyyyMMddHHmmss") Date fromDate,
+            @RequestParam(value = "fromId", defaultValue = Long.MAX_VALUE+"" ) Long fromTransaction,
+            @RequestParam(value = "n", defaultValue = "10") Integer nTransactions) {
+       
+        List<BankTransaction> transactions = new ArrayList<BankTransaction>();
+        logger.info(String.format("Fetching from %s %s", fromDate.toString(), fromTransaction.toString()));
+        transactions = transactionRepository.getNTransactionsAfterDate(accountId, fromDate, fromTransaction,
+                nTransactions);
+        return new ResponseEntity<List<BankTransaction>>(transactions, HttpStatus.OK);
+    }
+
+    /*
+     * Post a new Transaction (Repository then updates balance etc.)
+     */
+
     @PostMapping("/transaction")
     public ResponseEntity<String> NewTransaction(@RequestBody BankTransaction newTransaction) {
 
@@ -38,13 +115,19 @@ public class BalanceController {
         return new ResponseEntity<String>(HttpStatus.CREATED);
     }
 
-    // Load in at least one transaction per account
-    @SuppressWarnings("null")
+    /*
+     * load a lot of transactions, this just cuts down on making many webservice
+     * calls
+     * It could be optimized by turning these into bulk operations and committing
+     * say 1000
+     * at the same time but this is simpler.
+     */
+
     @PostMapping("/bootstrap")
     public ResponseEntity<String> BootstrapAccounts() {
 
         int bootstrapTxn = bootstrapTxnPerAccount * nAccounts;
-
+        logger.info("Thread bulk loading " + bootstrapTxn + " transactions");
         for (int x = 0; x < bootstrapTxn; x++) {
             BankTransaction newTransaction = BankTransaction.example();
             try {

@@ -1,7 +1,11 @@
 package com.mongodb.johnlpage.mongoBalanceService.repository;
 
+import java.util.Date;
+import java.util.List;
+
 import com.mongodb.johnlpage.mongoBalanceService.model.BankTransaction;
 
 interface CustomTransactionRepository {
-    long recordTransaction(BankTransaction newTransaction) ;
+    boolean recordTransaction(BankTransaction newTransaction) ;
+    List<BankTransaction> getNTransactionsAfterDate( long accountId, Date fromDate,long fromTransaction, int nTransactions );
 }
