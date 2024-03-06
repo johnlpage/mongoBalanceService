@@ -34,6 +34,7 @@ public class ServiceWorker implements Runnable {
 	int maxProducts = 1234;
 	String nextReview = "";
 	String lastProduct = "";
+	boolean useGet;
 
 	StringEntity entity;
 
@@ -49,8 +50,12 @@ public class ServiceWorker implements Runnable {
 		this.threadId = threadid;
 		this.url = url;
 		this.nCalls = ncalls;
+		this.useGet = false;
 		
-		
+		if( url.startsWith("GET:")) {
+			useGet=true;
+			url = url.substring(4);
+		}
 		// If you want dynamic posts - put an example here then move the
 		// entity code into postTest and play with the values before converting to a String
 		// If it's static we do it here for performance
@@ -68,6 +73,26 @@ public class ServiceWorker implements Runnable {
 		//times.put("MORE", new ArrayList<Long>());
 	}
 
+	void TestGet() {
+		HttpGet get = new HttpGet(url);
+		get.setHeader("User-Agent", "ServiceTest");
+		HttpResponse response;
+		try {
+			long startTime = System.currentTimeMillis();
+			response = client.execute(get);
+			String rval = EntityUtils.toString(response.getEntity(), "UTF-8");
+			response.getEntity().getContent().close();
+			long endTime = System.currentTimeMillis();
+			long duration = endTime - startTime;
+			times.get("POST").add(duration);
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return;
+	}
+
 	void TestPost() {
 		HttpPost post = new HttpPost(url);
 		post.setEntity(entity);
@@ -78,7 +103,7 @@ public class ServiceWorker implements Runnable {
 		HttpResponse response;
 		try {
 			long startTime = System.currentTimeMillis();
-
+			
 			response = client.execute(post);
 			String rval = EntityUtils.toString(response.getEntity(), "UTF-8");
 			response.getEntity().getContent().close();
@@ -98,7 +123,11 @@ public class ServiceWorker implements Runnable {
 	public void run() {
 
 		for (int c = 0; c < nCalls; c++) {
-					TestPost();
+			if(useGet) {
+				TestGet();
+			} else {
+				TestPost();
+			}
 		}
 	}
 

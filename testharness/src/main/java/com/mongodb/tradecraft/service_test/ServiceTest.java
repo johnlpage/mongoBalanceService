@@ -34,7 +34,7 @@ public class ServiceTest {
 			url = new String(args[0]);
 		} else {
 			System.out.println(
-					"Usage: java -jar ServiceTest.jar <url> [threads (4)] [times to call (1000)]");
+					"Usage: java -jar ServiceTest.jar [GET_]<url> [threads (4)] [times to call (1000)]");
 			return;
 		}
 

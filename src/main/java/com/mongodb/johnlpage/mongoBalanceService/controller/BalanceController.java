@@ -96,9 +96,9 @@ public class BalanceController {
         
         // For Load testing purposes - if accoutnId = -9999 then generate a random one
         if( accountId.equals(-999L)) {
-            accountId = BalanceController.rng.nextLong(BankTransaction.nAccounts)  + 1_000_000L;
+            accountId = BalanceController.rng.nextLong()%BankTransaction.nAccounts  + 1_000_000L;
         }
-        
+
         List<BankTransaction> transactions = new ArrayList<BankTransaction>();
         logger.info(String.format("Fetching from %s %s", fromDate.toString(), fromTransaction.toString()));
         transactions = transactionRepository.getNTransactionsAfterDate(accountId, fromDate, fromTransaction,
