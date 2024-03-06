@@ -11,4 +11,5 @@ interface CustomTransactionRepository {
     boolean recordTransaction_V3(BankTransaction newTransaction) ;
 
     List<BankTransaction> getNTransactionsAfterDate( long accountId, Date fromDate,long fromTransaction, int nTransactions );
+    List<BankTransaction> getNTransactionsAfterDateWithCache( long accountId, Date fromDate,long fromTransaction, int nTransactions );
 }

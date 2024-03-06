@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -29,6 +30,8 @@ public class CustomTransactionRepositoryImpl implements CustomTransactionReposit
 
     @Autowired
     private MongoTemplate template;
+    @Autowired
+    private BalanceRepository balanceRepository;
 
     // This is the code where we define our Transaction
     @Transactional
@@ -138,6 +141,16 @@ public class CustomTransactionRepositoryImpl implements CustomTransactionReposit
         return true;
     }
 
+    public List<BankTransaction> getNTransactionsAfterDateWithCache(long accountId, Date fromDate, long fromTransaction, int nTransactions) {
+        // If fromDate is in future and nTransactions < 10 pull the cached verison
+
+        if(nTransactions > 10 || fromDate.before(new Date())) {
+            return getNTransactionsAfterDate( accountId,  fromDate,  fromTransaction,  nTransactions) ;
+        }
+        Optional<BankBalance> b =  balanceRepository.findById(accountId);
+        if(b.isEmpty()) return new ArrayList<BankTransaction>();
+        return b.get().getMiniStatement();
+    }
 
     public List<BankTransaction> getNTransactionsAfterDate(long accountId, Date fromDate, long fromTransaction, int nTransactions) {
        /*

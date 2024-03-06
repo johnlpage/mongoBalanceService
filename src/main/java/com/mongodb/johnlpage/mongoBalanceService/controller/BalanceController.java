@@ -105,6 +105,25 @@ public class BalanceController {
         return new ResponseEntity<List<BankTransaction>>(transactions, HttpStatus.OK);
     }
 
+    @SuppressWarnings("null")
+    @GetMapping("/v2/transactions/{accountId}")
+    public ResponseEntity<List<BankTransaction>> GetStatementWithCache(@PathVariable Long accountId,
+            @RequestParam(value = "fromDate", defaultValue = "21000101000000") @DateTimeFormat(pattern = "yyyyMMddHHmmss") Date fromDate,
+            @RequestParam(value = "fromId", defaultValue = Long.MAX_VALUE+"" ) Long fromTransaction,
+            @RequestParam(value = "n", defaultValue = "10") Integer nTransactions) {
+        
+        // For Load testing purposes - if accoutnId = -9999 then generate a random one
+        if( accountId.equals(-999L)) {
+            accountId = BalanceController.rng.nextLong()%BankTransaction.nAccounts  + 1_000_000L;
+        }
+
+        List<BankTransaction> transactions = new ArrayList<BankTransaction>();
+        transactions = transactionRepository.getNTransactionsAfterDateWithCache(accountId, fromDate, fromTransaction,
+                nTransactions);
+        return new ResponseEntity<List<BankTransaction>>(transactions, HttpStatus.OK);
+    }
+
+
     /*
      * Post a new Transaction (Repository then updates balance etc.)
      */
