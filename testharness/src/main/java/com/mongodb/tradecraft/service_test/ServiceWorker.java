@@ -54,7 +54,7 @@ public class ServiceWorker implements Runnable {
 		
 		if( url.startsWith("GET:")) {
 			useGet=true;
-			url = url.substring(4);
+			this.url = url.substring(4);
 		}
 		// If you want dynamic posts - put an example here then move the
 		// entity code into postTest and play with the values before converting to a String
