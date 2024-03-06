@@ -100,7 +100,6 @@ public class BalanceController {
         }
 
         List<BankTransaction> transactions = new ArrayList<BankTransaction>();
-        logger.info(String.format("Fetching from ac: %s before: %s / %s", accountId.toString(), fromDate.toString(), fromTransaction.toString()));
         transactions = transactionRepository.getNTransactionsAfterDate(accountId, fromDate, fromTransaction,
                 nTransactions);
         return new ResponseEntity<List<BankTransaction>>(transactions, HttpStatus.OK);
