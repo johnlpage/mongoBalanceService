@@ -106,7 +106,7 @@ public class BalanceController {
     }
 
     @SuppressWarnings("null")
-    @GetMapping("/v2/transactions/{accountId}")
+    @GetMapping("/v3/transactions/{accountId}")
     public ResponseEntity<List<BankTransaction>> GetStatementWithCache(@PathVariable Long accountId,
             @RequestParam(value = "fromDate", defaultValue = "21000101000000") @DateTimeFormat(pattern = "yyyyMMddHHmmss") Date fromDate,
             @RequestParam(value = "fromId", defaultValue = Long.MAX_VALUE+"" ) Long fromTransaction,
@@ -193,4 +193,41 @@ public class BalanceController {
 
         return new ResponseEntity<String>(HttpStatus.CREATED);
     }
+
+    @PostMapping("/v2/bootstrap")
+    public ResponseEntity<String> BootstrapAccountsV2() {
+
+        int bootstrapTxn = bootstrapTxnPerAccount * nAccounts;
+        logger.info("Thread bulk loading " + bootstrapTxn + " transactions");
+        for (int x = 0; x < bootstrapTxn; x++) {
+            BankTransaction newTransaction = BankTransaction.example();
+            try {
+                transactionRepository.recordTransaction_V2(newTransaction);
+            } catch (Exception e) {
+                System.err.println("Error updating MongoDB");
+                System.err.println(e.getMessage()); // Might get dups here
+            }
+        }
+
+        return new ResponseEntity<String>(HttpStatus.CREATED);
+    }
+
+    @PostMapping("/v3/bootstrap")
+    public ResponseEntity<String> BootstrapAccountsV3() {
+
+        int bootstrapTxn = bootstrapTxnPerAccount * nAccounts;
+        logger.info("Thread bulk loading " + bootstrapTxn + " transactions");
+        for (int x = 0; x < bootstrapTxn; x++) {
+            BankTransaction newTransaction = BankTransaction.example();
+            try {
+                transactionRepository.recordTransaction_V3(newTransaction);
+            } catch (Exception e) {
+                System.err.println("Error updating MongoDB");
+                System.err.println(e.getMessage()); // Might get dups here
+            }
+        }
+
+        return new ResponseEntity<String>(HttpStatus.CREATED);
+    }
+
 }
