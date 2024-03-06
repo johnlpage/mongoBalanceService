@@ -26,8 +26,8 @@ public class ServiceTest {
 		logger = LoggerFactory.getLogger(ServiceTest.class);
 		logger.info(version);
 		boolean load=false;
-		int nThreads = 4;
-		int nCalls = 1000;
+		long nThreads = 4;
+		long nCalls = 1000;
 		String url = "http://localhost:5000/reviews";
 
 		if (args.length > 0) {
@@ -46,11 +46,11 @@ public class ServiceTest {
 			nCalls = Integer.parseInt(args[2]);
 		}
 
-		ExecutorService simexec = Executors.newFixedThreadPool(nThreads);
+		ExecutorService simexec = Executors.newFixedThreadPool((int)nThreads);
 		long start = System.currentTimeMillis();
 		ArrayList<ServiceWorker> workers = new ArrayList<ServiceWorker>();
 		for (int i = 0; i < nThreads; i++) {
-			ServiceWorker s = new ServiceWorker(i, url, nCalls);
+			ServiceWorker s = new ServiceWorker(i, url, (int) nCalls);
 			workers.add(s);
 			simexec.execute(s);
 		}

@@ -57,6 +57,17 @@ public class BankTransaction {
     private List<String> flags;
     private HashMap<String,Object> requestJSON;
 
+    //Supporting V2
+    private BalanceHistory balanceHistory;
+    
+    public BalanceHistory getBalanceHistory() {
+        return balanceHistory;
+    }
+
+    public void setBalanceHistory(BalanceHistory balanceHistory) {
+        this.balanceHistory = balanceHistory;
+    }
+
     BankTransaction() {
        
 

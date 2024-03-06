@@ -7,5 +7,6 @@ import com.mongodb.johnlpage.mongoBalanceService.model.BankTransaction;
 
 interface CustomTransactionRepository {
     boolean recordTransaction(BankTransaction newTransaction) ;
+    boolean recordTransaction_V2(BankTransaction newTransaction) ;
     List<BankTransaction> getNTransactionsAfterDate( long accountId, Date fromDate,long fromTransaction, int nTransactions );
 }

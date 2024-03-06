@@ -17,7 +17,7 @@ curl -d "$TXN"  -H "Content-Type: application/json"   -X POST http://localhost:8
 ```
 
 
-Bootstrap load a bunch of test traansactions (see appication.properties2)
+Bootstrap load a bunch of test transactions (see appication.properties )
 
 ```
 curl -d '{}'  -H "Content-Type: application/json"   -X POST http://localhost:8080/bootstrap

@@ -115,6 +115,19 @@ public class BalanceController {
         return new ResponseEntity<String>(HttpStatus.CREATED);
     }
 
+    @PostMapping("/v2/transaction")
+    public ResponseEntity<String> NewTransactionV2(@RequestBody BankTransaction newTransaction) {
+
+        // For testing - create one if we didn't push one with an id
+        if (newTransaction.getTransactionId() == null) {
+            newTransaction = BankTransaction.example();
+        }
+
+        transactionRepository.recordTransaction_V2(newTransaction);
+        return new ResponseEntity<String>(HttpStatus.CREATED);
+    }
+
+
     /*
      * load a lot of transactions, this just cuts down on making many webservice
      * calls

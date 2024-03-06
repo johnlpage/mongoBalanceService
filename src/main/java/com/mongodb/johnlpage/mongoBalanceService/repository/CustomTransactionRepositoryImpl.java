@@ -65,6 +65,40 @@ public class CustomTransactionRepositoryImpl implements CustomTransactionReposit
     }
 
 
+    @Transactional
+    @Retryable
+    public boolean recordTransaction_V2(BankTransaction newTransaction) {
+        // Here we record the Transaction and the resulting Balance Update together
+
+        // Update the balance
+        // Use Spring not Mongo Syntax here
+        Query query = new Query(Criteria.where("accountId").is(newTransaction.getAccountId()));
+        Update updateBalance = new Update();
+        updateBalance.inc("balance", newTransaction.getAmmount());
+
+        // Using findAndModify Because we want to see what it looks like after the
+        // change.
+        // We dont want to read it up front.
+        FindAndModifyOptions options = new FindAndModifyOptions();
+        options.upsert(true);
+        options.returnNew(true);
+
+        BankBalance postUpdate = template.findAndModify(query, updateBalance, options, BankBalance.class);
+
+        // Record the balanceHistory
+        BalanceHistory bh = new BalanceHistory();
+        bh.setAccountId(newTransaction.getAccountId());
+        bh.setUpdateTime(new Date());
+        bh.setTransactionId(newTransaction.getTransactionId());
+        bh.setBalance(postUpdate.getBalance());
+        bh.setChange(newTransaction.getAmmount());
+        newTransaction.setBalanceHistory(bh);
+        template.insert(newTransaction);
+
+        return true;
+    }
+
+
     public List<BankTransaction> getNTransactionsAfterDate(long accountId, Date fromDate, long fromTransaction, int nTransactions) {
        /*
         * We could do this simply by adding an annotations in TransactionRepository
