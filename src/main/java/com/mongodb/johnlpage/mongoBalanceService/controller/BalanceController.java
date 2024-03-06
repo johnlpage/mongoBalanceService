@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ import com.mongodb.johnlpage.mongoBalanceService.repository.TransactionRepositor
 public class BalanceController {
 
     Logger logger = LoggerFactory.getLogger(BalanceController.class);
+    private static Random rng = new Random();
 
     @Autowired
     private TransactionRepository transactionRepository;
@@ -91,7 +93,12 @@ public class BalanceController {
             @RequestParam(value = "fromDate", defaultValue = "21000101000000") @DateTimeFormat(pattern = "yyyyMMddHHmmss") Date fromDate,
             @RequestParam(value = "fromId", defaultValue = Long.MAX_VALUE+"" ) Long fromTransaction,
             @RequestParam(value = "n", defaultValue = "10") Integer nTransactions) {
-       
+        
+        // For Load testing purposes - if accoutnId = -9999 then generate a random one
+        if( accountId.equals(-999L)) {
+            accountId = BalanceController.rng.nextLong(BankTransaction.nAccounts)  + 1_000_000L;
+        }
+        
         List<BankTransaction> transactions = new ArrayList<BankTransaction>();
         logger.info(String.format("Fetching from %s %s", fromDate.toString(), fromTransaction.toString()));
         transactions = transactionRepository.getNTransactionsAfterDate(accountId, fromDate, fromTransaction,
