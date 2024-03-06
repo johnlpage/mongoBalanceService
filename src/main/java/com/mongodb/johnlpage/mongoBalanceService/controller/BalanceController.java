@@ -204,8 +204,7 @@ public class BalanceController {
             try {
                 transactionRepository.recordTransaction_V2(newTransaction);
             } catch (Exception e) {
-                System.err.println("Error updating MongoDB");
-                System.err.println(e.getMessage()); // Might get dups here
+                logger.error("Error updating MongoDB " + e.getMessage());
             }
         }
 
@@ -222,8 +221,7 @@ public class BalanceController {
             try {
                 transactionRepository.recordTransaction_V3(newTransaction);
             } catch (Exception e) {
-                System.err.println("Error updating MongoDB");
-                System.err.println(e.getMessage()); // Might get dups here
+                logger.error("Error updating MongoDB " + e.getMessage());
             }
         }
 
