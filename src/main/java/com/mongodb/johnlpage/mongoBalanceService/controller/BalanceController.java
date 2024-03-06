@@ -133,6 +133,21 @@ public class BalanceController {
         return new ResponseEntity<String>(HttpStatus.CREATED);
     }
 
+    // In this - the details of the last 10 transactions are stored in the account balance
+    // Making them faster to retrieve
+
+    @PostMapping("/v3/transaction")
+    public ResponseEntity<String> NewTransactionV3(@RequestBody BankTransaction newTransaction) {
+
+        // For testing - create one if we didn't push one with an id
+        if (newTransaction.getTransactionId() == null) {
+            newTransaction = BankTransaction.example();
+        }
+
+        transactionRepository.recordTransaction_V3(newTransaction);
+        return new ResponseEntity<String>(HttpStatus.CREATED);
+    }
+
 
     /*
      * load a lot of transactions, this just cuts down on making many webservice

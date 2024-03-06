@@ -17,6 +17,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.data.mongodb.core.query.Update.PushOperatorBuilder;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -75,6 +76,45 @@ public class CustomTransactionRepositoryImpl implements CustomTransactionReposit
         Query query = new Query(Criteria.where("accountId").is(newTransaction.getAccountId()));
         Update updateBalance = new Update();
         updateBalance.inc("balance", newTransaction.getAmmount());
+
+        // Using findAndModify Because we want to see what it looks like after the
+        // change.
+        // We dont want to read it up front.
+        FindAndModifyOptions options = new FindAndModifyOptions();
+        options.upsert(true);
+        options.returnNew(true);
+
+        BankBalance postUpdate = template.findAndModify(query, updateBalance, options, BankBalance.class);
+
+        // Record the balanceHistory
+        BalanceHistory bh = new BalanceHistory();
+        bh.setAccountId(newTransaction.getAccountId());
+        bh.setUpdateTime(new Date());
+        bh.setTransactionId(newTransaction.getTransactionId());
+        bh.setBalance(postUpdate.getBalance());
+        bh.setChange(newTransaction.getAmmount());
+        newTransaction.setBalanceHistory(bh);
+        template.insert(newTransaction);
+
+        return true;
+    }
+
+    @Transactional
+    @Retryable
+    public boolean recordTransaction_V3(BankTransaction newTransaction) {
+        // Here we record the Transaction and the resulting Balance Update together
+
+        // Update the balance
+        // Use Spring not Mongo Syntax here
+        // As well as changing the balance - we are also adding this transaction to 
+        // An array if it's newer then any in there - the array is sorted and capped at 10 elements
+        // This is a cache of the latest 10 transactions to speed up that specific read.
+
+        Query query = new Query(Criteria.where("accountId").is(newTransaction.getAccountId()));
+        Update updateBalance = new Update();
+        updateBalance.inc("balance", newTransaction.getAmmount());
+        PushOperatorBuilder pushUpdate = updateBalance.push("miniStatement");
+        updateBalance = pushUpdate.sort(Sort.by(Direction.DESC,"transactionDate")).slice(10).each(newTransaction);
 
         // Using findAndModify Because we want to see what it looks like after the
         // change.
