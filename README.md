@@ -64,7 +64,7 @@ Process many transactions to bulk load data
 
 Fetch the balance for an account and the last 10 transactions
 ---------------------------------------------------------------
-`GET /balance/{accountid}``
+`GET /balance/{accountid}`
 
 Fetch a specific transaction
 ------------------------------
