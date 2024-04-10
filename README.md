@@ -3,7 +3,7 @@
 ## Prerequisites
 
 * This requires Maven and Java 17 or higher.
-* MongoDB 6.0 or higher as a Replica set - either MongoDB atlas or start a single node replica set.
+* MongoDB 6.0 or higher as a Replica set - either MongoDB Atlas or start a single node replica set locally.
 * Do not use MongoDB atlas cluster sizes < M30 for any sort of performance testing as these are throttled
 
 ## Building
