@@ -49,7 +49,7 @@ public class BankTransaction {
     private String reference;
     // Have to explicitly call out Decimal128 otherwise string :-(
     @Field(targetType = FieldType.DECIMAL128)
-    private BigDecimal ammount;
+    private BigDecimal amount;
  
     private Date transactionDate;
     private String IBAN;
@@ -110,8 +110,8 @@ public class BankTransaction {
         this.reference = reference;
     }
 
-    public void setAmmount(BigDecimal ammount) {
-        this.ammount = ammount;
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
     }
 
     public void setIBAN(String IBAN) {
@@ -142,8 +142,8 @@ public class BankTransaction {
         return reference;
     }
 
-    public BigDecimal getAmmount() {
-        return ammount;
+    public BigDecimal getAmount() {
+        return amount;
     }
 
     // Generate a fake transaction for testing
@@ -164,9 +164,9 @@ public class BankTransaction {
      
         t.reference = ""; // TODO generate some value
         // more positive than negative values to accounts go up.
-        t.ammount = new BigDecimal(Double.toString(RNG.nextDouble(1000) - 400.0)).setScale(2, RoundingMode.HALF_UP);
+        t.amount = new BigDecimal(Double.toString(RNG.nextDouble(1000) - 400.0)).setScale(2, RoundingMode.HALF_UP);
    
-        if (t.ammount.compareTo(BigDecimal.ZERO) > 0) {
+        if (t.amount.compareTo(BigDecimal.ZERO) > 0) {
             t.transactionType = TransactionType.DEPOSIT;
         } else {
             t.transactionType = TransactionType.WITHDRAWL;

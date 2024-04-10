@@ -95,7 +95,7 @@ curl -d '{}'  -H "Content-Type: application/json"   -X POST http://localhost:808
 Load a Specific transaction (TransactionId must be unique and as it's a long supplied as a string to avoid JSON rounding)
 
 ```
-export TXN='{"transactionId":"170963189769800046","customerId":4835458,"accountId":1611819,"reference":"","ammount":122.60,"transactionDate":"2016-08-13T21:28:04.639+00:00","transactionType":"DEPOSIT","flags":[],"iban":"XX707976139561090747"}'
+export TXN='{"transactionId":"170963189769800046","customerId":4835458,"accountId":1611819,"reference":"","amount":122.60,"transactionDate":"2016-08-13T21:28:04.639+00:00","transactionType":"DEPOSIT","flags":[],"iban":"XX707976139561090747"}'
 
 curl -d "$TXN"  -H "Content-Type: application/json"   -X POST http://localhost:8080/transaction
 ```
