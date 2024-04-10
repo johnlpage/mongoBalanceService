@@ -1,7 +1,6 @@
 package com.mongodb.johnlpage.mongoBalanceService.repository;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
-import org.springframework.data.mongodb.SessionSynchronization;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -45,7 +43,7 @@ public class CustomTransactionRepositoryImpl implements CustomTransactionReposit
         // Use Spring not Mongo Syntax here
         Query query = new Query(Criteria.where("accountId").is(newTransaction.getAccountId()));
         Update updateBalance = new Update();
-        updateBalance.inc("balance", newTransaction.getAmmount());
+        updateBalance.inc("balance", newTransaction.getAmount());
 
         // Using findAndModify Because we want to see what it looks like after the
         // change.
@@ -62,7 +60,7 @@ public class CustomTransactionRepositoryImpl implements CustomTransactionReposit
         bh.setUpdateTime(new Date());
         bh.setTransactionId(newTransaction.getTransactionId());
         bh.setBalance(postUpdate.getBalance());
-        bh.setChange(newTransaction.getAmmount());
+        bh.setChange(newTransaction.getAmount());
         template.insert(bh);
 
         return true;
@@ -78,7 +76,7 @@ public class CustomTransactionRepositoryImpl implements CustomTransactionReposit
         // Use Spring not Mongo Syntax here
         Query query = new Query(Criteria.where("accountId").is(newTransaction.getAccountId()));
         Update updateBalance = new Update();
-        updateBalance.inc("balance", newTransaction.getAmmount());
+        updateBalance.inc("balance", newTransaction.getAmount());
 
         // Using findAndModify Because we want to see what it looks like after the
         // change.
@@ -95,7 +93,7 @@ public class CustomTransactionRepositoryImpl implements CustomTransactionReposit
         bh.setUpdateTime(new Date());
         bh.setTransactionId(newTransaction.getTransactionId());
         bh.setBalance(postUpdate.getBalance());
-        bh.setChange(newTransaction.getAmmount());
+        bh.setChange(newTransaction.getAmount());
         newTransaction.setBalanceHistory(bh);
         template.insert(newTransaction);
 
@@ -115,7 +113,7 @@ public class CustomTransactionRepositoryImpl implements CustomTransactionReposit
 
         Query query = new Query(Criteria.where("accountId").is(newTransaction.getAccountId()));
         Update updateBalance = new Update();
-        updateBalance.inc("balance", newTransaction.getAmmount());
+        updateBalance.inc("balance", newTransaction.getAmount());
         PushOperatorBuilder pushUpdate = updateBalance.push("miniStatement");
         updateBalance = pushUpdate.sort(Sort.by(Direction.DESC,"transactionDate")).slice(10).each(newTransaction);
 
@@ -134,7 +132,7 @@ public class CustomTransactionRepositoryImpl implements CustomTransactionReposit
         bh.setUpdateTime(new Date());
         bh.setTransactionId(newTransaction.getTransactionId());
         bh.setBalance(postUpdate.getBalance());
-        bh.setChange(newTransaction.getAmmount());
+        bh.setChange(newTransaction.getAmount());
         newTransaction.setBalanceHistory(bh);
         template.insert(newTransaction);
 
